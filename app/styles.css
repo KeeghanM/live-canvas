@@ -13,6 +13,8 @@ body {
   color: #f3f3f3;
   background-color: #03061f;
   overflow: hidden;
+  user-select: none;
+  height: 100vh;
 }
 
 h1,
@@ -108,7 +110,6 @@ h1 span {
 }
 .embla {
   overflow: hidden;
-  user-select: none;
   display: flex;
 }
 .embla--selected {

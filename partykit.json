@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.partykit.io/schema.json",
-  "name": "live-canvas",
+  "name": "canvas-live",
   "main": "party/server.ts",
   "compatibilityDate": "2024-09-20",
   "serve": {

@@ -1,31 +1,37 @@
-import './styles.css'
-import { createRoot } from 'react-dom/client'
-import LoginForm from './components/ui/login-form'
-import Canvas from './components/canvas/canvas'
-import { useStore } from './store'
-import usePartySocket from 'partysocket/react'
-import { useEffect } from 'react'
-import UserView from './components/user/user-view'
+import "./styles.css";
+import { createRoot } from "react-dom/client";
+import LoginForm from "./components/ui/login-form";
+import Canvas from "./components/canvas/canvas";
+import { useStore } from "./store";
+import usePartySocket from "partysocket/react";
+import { useEffect } from "react";
+import UserView from "./components/user/user-view";
+import { spriteOptions } from "./components/user/sprites";
 
 function App() {
-  const name = useStore((state) => state.name)
-  const setSocket = useStore((state) => state.setSocket)
+  const name = useStore((state) => state.name);
+  const setSocket = useStore((state) => state.setSocket);
 
   const socket = usePartySocket({
-    room: 'canvas-live',
-  })
+    room: "canvas-live",
+  });
 
   useEffect(() => {
     if (socket) {
-      setSocket(socket)
+      setSocket(socket);
     }
-  }, [socket, setSocket])
+  }, [socket, setSocket]);
 
-  if (!name) return <LoginForm />
+  useEffect(() => {
+    // Preload sprite images
+    spriteOptions.map((s) => (new Image().src = `/images/${s.id}.png`));
+  }, []);
 
-  if (name === 'admin') return <Canvas />
+  if (!name) return <LoginForm />;
 
-  return <UserView />
+  if (name === "admin") return <Canvas />;
+
+  return <UserView />;
 }
 
-createRoot(document.getElementById('app')!).render(<App />)
+createRoot(document.getElementById("app")!).render(<App />);

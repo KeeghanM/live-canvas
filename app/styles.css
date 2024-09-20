@@ -35,9 +35,9 @@ h6 {
   place-items: center;
 }
 .login-form__center {
-  min-width: 400px;
   max-width: 95vw;
   padding: 2rem;
+  margin-inline: 2rem;
   border-radius: 5px;
   background-color: #fff;
   color: #333;
@@ -76,22 +76,43 @@ button:hover {
   padding: 1rem;
   z-index: 1000;
 }
+.adder {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.adder h1 {
+  font-size: 3rem;
+  margin: 0;
+  margin-top: 2rem;
+  text-align: center;
+  padding-inline: 1rem;
+}
+.adder h1 span {
+  color: #4f4fcf;
+}
+.adder p {
+  margin: auto;
+  font-size: 2rem;
+  text-align: center;
+  padding-inline: 2rem;
+  font-style: italic;
+}
 .embla {
   overflow: hidden;
   user-select: none;
-  height: 100dvh;
+  display: flex;
 }
 .embla__container {
   display: flex;
-  height: 100%;
+  margin-bottom: 2rem;
 }
 .embla__slide {
   flex: 0 0 25%;
   min-width: 0;
   display: grid;
   place-items: center;
-  margin-top: auto;
-  margin-bottom: 2rem;
   transition: transform 0.3s;
 }
 .embla__slide img {
@@ -104,4 +125,24 @@ button:hover {
 }
 .embla__slide.embla__slide.selected img {
   filter: drop-shadow(0 0 10px #fff);
+}
+.adder .selected {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+.adder .selected button {
+  background: #03061f;
+  border: 2px solid #4f4fcf;
+  color: #4f4fcf;
+  font-weight: bold;
+  border-radius: 9999px;
+  font-size: 1.5rem;
+  padding: 1rem 2rem;
+}
+.adder .selected button:hover {
+  filter: drop-shadow(0 0 10px #4f4fcf);
 }

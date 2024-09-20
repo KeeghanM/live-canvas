@@ -3,8 +3,8 @@ import type {
   Sprite,
   ConnectionMessage,
   UpdateMessage,
-  SpriteMessage,
   NameValidationMessage,
+  MoveMessage,
 } from './types'
 
 // TODO: Remove names on disconnect - this will require a Map of connections to names & a new event
@@ -14,24 +14,30 @@ export default class Server implements Party.Server {
 
   constructor(readonly room: Party.Room) {}
 
-  onConnect(conn: Party.Connection, ctx: Party.ConnectionContext) {
-    // Send the current sprites to the new client
-    const spritesMsg: SpriteMessage = { type: 'sprites', payload: this.sprites }
-    conn.send(JSON.stringify(spritesMsg))
-  }
-
   onMessage(message: string, sender: Party.Connection) {
     const msg = JSON.parse(message) as
       | UpdateMessage
-      | ConnectionMessage
       | NameValidationMessage
+      | MoveMessage
     if (msg.type === 'validateName') {
       this.validateName(msg.payload, sender)
     } else if (msg.type === 'add') {
       this.addSprite(msg.payload)
     } else if (msg.type === 'remove') {
       this.removeSprite(msg.payload)
+    } else if (msg.type === 'move') {
+      this.move(msg.payload.id, msg.payload.dx, msg.payload.dy)
     }
+  }
+
+  move(id: string, dx: number, dy: number) {
+    const sprite = this.sprites.find((s) => s.id === id)
+    if (!sprite) return
+
+    sprite.x += dx
+    sprite.y += dy
+
+    this.room.broadcast(JSON.stringify({ type: 'move', payload: sprite }))
   }
 
   validateName(name: string, sender: Party.Connection) {
@@ -53,6 +59,8 @@ export default class Server implements Party.Server {
   }
 
   addSprite(sprite: Sprite) {
+    // Randomly place the sprite along the bottom
+    sprite.x = Math.floor(100 + Math.random() * 700)
     this.sprites.push(sprite)
     this.room.broadcast(JSON.stringify({ type: 'add', payload: sprite }))
   }

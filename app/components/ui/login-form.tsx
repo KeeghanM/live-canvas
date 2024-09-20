@@ -1,13 +1,13 @@
 import { Filter } from 'bad-words'
 import { useState } from 'react'
-import { useCanvasStore } from '../../canvas-store'
+import { useStore } from '../../store'
 
 export default function LoginForm() {
   const [name, setName] = useState('')
   const [error, setError] = useState('')
   const [isValidating, setIsValidating] = useState(false)
-  const socket = useCanvasStore((state) => state.socket)
-  const setStoreName = useCanvasStore((state) => state.setName)
+  const socket = useStore((state) => state.socket)
+  const setStoreName = useStore((state) => state.setName)
 
   const filter = new Filter()
 

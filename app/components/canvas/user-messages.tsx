@@ -1,7 +1,7 @@
-import { useCanvasStore } from '../../canvas-store'
+import { useStore } from '../../store'
 
 const UserMessages = () => {
-  const names = useCanvasStore((state) => state.names)
+  const names = useStore((state) => state.names)
 
   return (
     <div className="user-messages">

@@ -1,60 +1,55 @@
-import { type P5CanvasInstance, ReactP5Wrapper } from '@p5-wrapper/react'
 import type { Sprite } from '../../../party/types'
-import { useCanvasStore } from '../../canvas-store'
 import UserMessages from './user-messages'
+import { useEffect, useState } from 'react'
+import { useStore } from '../../store'
 
 export default function Canvas() {
-  const sprites = useCanvasStore((state) => state.sprites)
-  const addSprite = useCanvasStore((state) => state.addSprite)
-  const removeSprite = useCanvasStore((state) => state.removeSprite)
-  const socket = useCanvasStore((state) => state.socket)
-
-  if (!socket) return null
-
-  const sketch = (p: P5CanvasInstance) => {
-    p.setup = () => {
-      p.createCanvas(p.windowWidth, p.windowHeight)
-    }
-    p.windowResized = () => p.resizeCanvas(p.windowWidth, p.windowHeight)
-
-    p.mousePressed = () => {
-      // check if the mouse is over a sprite
-      const sprite = sprites.find((sprite) => {
-        const d = p.dist(p.mouseX, p.mouseY, sprite.x, sprite.y)
-        return d < 25
-      })
-      if (sprite) {
-        if (sprite.owner === socket.id) {
-          removeSprite(sprite)
-          socket.send(JSON.stringify({ type: 'remove', payload: sprite }))
-        }
-        return
-      }
-
-      // add a new sprite
-      const newSprite = {
-        type: 'sprite',
-        owner: socket.id,
-        x: p.mouseX,
-        y: p.mouseY,
-      }
-      addSprite(newSprite)
-      socket.send(JSON.stringify({ type: 'add', payload: newSprite }))
-    }
-
-    p.draw = () => {
-      p.background('#03061f')
-
-      for (const sprite of sprites) {
-        p.fill(255)
-        p.ellipse(sprite.x, sprite.y, 50, 50)
-      }
-    }
+  const [sprites, setSprites] = useState<Sprite[]>([])
+  const socket = useStore((state) => state.socket)
+  const addName = useStore((state) => state.addName)
+  const addSprite = (sprite: Sprite) => {
+    setSprites((sprites) => [...sprites, sprite])
   }
+  const removeSprite = (sprite: Sprite) => {
+    setSprites((sprites) => sprites.filter((s) => s.id !== sprite.id))
+  }
+  const updateSprite = (sprite: Sprite) => {
+    setSprites((sprites) =>
+      sprites.map((s) => (s.id === sprite.id ? sprite : s))
+    )
+  }
+
+  useEffect(() => {
+    if (!socket) return
+    socket.onmessage = (evt) => {
+      const data = JSON.parse(evt.data)
+      if (data.type === 'move') {
+        updateSprite(data.payload)
+      } else if (data.type === 'add') {
+        addSprite(data.payload)
+      } else if (data.type === 'remove') {
+        removeSprite(data.payload)
+      } else if (data.type === 'userJoined') {
+        addName(data.payload)
+      } else if (data.type === 'sprites') {
+        setSprites(data.payload)
+      }
+    }
+  }, [socket, addName])
 
   return (
     <>
-      <ReactP5Wrapper sketch={sketch} />
+      {sprites.map((sprite) => (
+        <img
+          key={sprite.id}
+          src="https://picsum.photos/200/200"
+          style={{
+            position: 'absolute',
+            left: sprite.x,
+            top: sprite.y,
+          }}
+        />
+      ))}
       <UserMessages />
     </>
   )

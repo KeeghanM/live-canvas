@@ -74,7 +74,7 @@ export default class Server implements Party.Server {
     this.room.broadcast(JSON.stringify({ type: "remove", payload: sprite }));
   }
 
-  onDisconnect(connection: Party.Connection) {
+  onClose(connection: Party.Connection) {
     const name = this.names.get(connection.id);
     if (name) {
       this.names.delete(connection.id);

@@ -3,9 +3,9 @@ import { createRoot } from 'react-dom/client'
 import LoginForm from './components/ui/login-form'
 import Canvas from './components/canvas/canvas'
 import { useStore } from './store'
-import Adder from './components/adder/adder'
 import usePartySocket from 'partysocket/react'
 import { useEffect } from 'react'
+import UserView from './components/user/user-view'
 
 function App() {
   const name = useStore((state) => state.name)
@@ -25,7 +25,7 @@ function App() {
 
   if (name === 'admin') return <Canvas />
 
-  return <Adder />
+  return <UserView />
 }
 
 createRoot(document.getElementById('app')!).render(<App />)

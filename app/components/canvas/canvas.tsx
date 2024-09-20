@@ -3,10 +3,7 @@ import type { Sprite } from '../../../party/types'
 import { useCanvasStore } from '../../canvas-store'
 import UserMessages from './user-messages'
 
-interface CanvasProps {
-  name: string
-}
-export default function Canvas({ name }: CanvasProps) {
+export default function Canvas() {
   const sprites = useCanvasStore((state) => state.sprites)
   const addSprite = useCanvasStore((state) => state.addSprite)
   const removeSprite = useCanvasStore((state) => state.removeSprite)
@@ -21,6 +18,20 @@ export default function Canvas({ name }: CanvasProps) {
     p.windowResized = () => p.resizeCanvas(p.windowWidth, p.windowHeight)
 
     p.mousePressed = () => {
+      // check if the mouse is over a sprite
+      const sprite = sprites.find((sprite) => {
+        const d = p.dist(p.mouseX, p.mouseY, sprite.x, sprite.y)
+        return d < 25
+      })
+      if (sprite) {
+        if (sprite.owner === socket.id) {
+          removeSprite(sprite)
+          socket.send(JSON.stringify({ type: 'remove', payload: sprite }))
+        }
+        return
+      }
+
+      // add a new sprite
       const newSprite = {
         type: 'sprite',
         owner: socket.id,

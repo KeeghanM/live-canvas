@@ -38,7 +38,7 @@ function App() {
     }
   }, [socket, setSocket])
 
-  return <main>{name ? <Canvas name={name} /> : <LoginForm />}</main>
+  return <main>{name ? <Canvas /> : <LoginForm />}</main>
 }
 
 createRoot(document.getElementById('app')!).render(<App />)

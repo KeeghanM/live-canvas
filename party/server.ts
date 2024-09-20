@@ -7,6 +7,7 @@ import type {
   NameValidationMessage,
 } from './types'
 
+// TODO: Remove names on disconnect - this will require a Map of connections to names & a new event
 export default class Server implements Party.Server {
   sprites: Sprite[] = []
   names: string[] = []

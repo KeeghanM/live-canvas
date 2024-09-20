@@ -39,7 +39,9 @@ export default function LoginForm() {
   return (
     <div className="login-form">
       <div className="login-form__center">
-        <h1>Join CanvasLive</h1>
+        <h1>
+          Join <span>CanvasLive</span>
+        </h1>
         <div className="flex">
           <input
             type="text"

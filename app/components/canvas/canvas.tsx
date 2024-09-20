@@ -42,7 +42,7 @@ export default function Canvas() {
       {sprites.map((sprite) => (
         <img
           key={sprite.id}
-          src="https://picsum.photos/200/200"
+          src={`/images/${sprite.type}.png`}
           style={{
             position: 'absolute',
             left: sprite.x,

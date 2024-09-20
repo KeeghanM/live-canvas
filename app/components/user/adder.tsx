@@ -4,30 +4,28 @@ import { useStore } from '../../store'
 import useEmblaCarousel from 'embla-carousel-react'
 import { spriteOptions } from './sprites'
 import { useState } from 'react'
-interface AdderProps {
-  setSpriteId: (id: string) => void
-}
-export default function Adder({ setSpriteId }: AdderProps) {
-  const name = useStore((state) => state.name)
+import Mover from './mover'
+export default function Adder() {
+  const [spriteId, setSpriteId] = useState<string | null>(null)
   const [selectedSprite, setSelectedSprite] = useState<{
     id: string
     label: string
   } | null>(null)
   const socket = useStore((state) => state.socket)
-  const [emblaRef, emblaApi] = useEmblaCarousel({
+  const [emblaRef] = useEmblaCarousel({
     loop: true,
     dragFree: true,
   })
 
   const addSprite = () => {
-    if (!socket) return
+    if (!socket || !selectedSprite) return
     const newSpriteId = uuidv4()
     const newSprite: Sprite = {
       id: newSpriteId,
       owner: socket.id,
       x: 0,
       y: 0,
-      type: 'violin',
+      type: selectedSprite.id,
     }
     socket.send(
       JSON.stringify({
@@ -39,14 +37,19 @@ export default function Adder({ setSpriteId }: AdderProps) {
   }
   return (
     <div className="adder">
-      <h1>
-        Welcome, <span>{name}</span>!
-      </h1>
-      {selectedSprite ? (
+      {spriteId ? (
+        <Mover
+          spriteId={spriteId}
+          done={() => {
+            setSpriteId(null)
+            setSelectedSprite(null)
+          }}
+        />
+      ) : selectedSprite ? (
         <div className="selected">
           <h2 className="selected__label">{selectedSprite.label}</h2>
           <img
-            src={`/images/${selectedSprite}.png`}
+            src={`/images/${selectedSprite.id}.png`}
             alt={selectedSprite.label}
           />
           <button onClick={addSprite}>Add to CanvasLive</button>
@@ -55,7 +58,7 @@ export default function Adder({ setSpriteId }: AdderProps) {
         <p>Select an image from below to add it to CanvasLive!</p>
       )}
       <div
-        className="embla"
+        className={`embla ${spriteId ? 'embla--selected' : ''}`}
         ref={emblaRef}
       >
         <div className="embla__container">

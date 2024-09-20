@@ -1,6 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
-import { useState, useRef, useEffect } from 'react'
-import type { Sprite } from '../../../party/types'
+import { useRef, useEffect } from 'react'
 import { useStore } from '../../store'
 
 interface MoverProps {
@@ -47,40 +45,45 @@ export default function Mover({ spriteId, done }: MoverProps) {
   }, [])
 
   return (
-    <>
-      <button onClick={done}>Done</button>
-      <div style={{ marginTop: '10px' }}>
-        <button
-          onMouseDown={() => handleMoveStart(0, -10)}
-          onMouseUp={handleMoveEnd}
-          onMouseLeave={handleMoveEnd}
-        >
-          ↑
-        </button>
-        <br />
-        <button
-          onMouseDown={() => handleMoveStart(-10, 0)}
-          onMouseUp={handleMoveEnd}
-          onMouseLeave={handleMoveEnd}
-        >
-          ←
-        </button>
-        <button
-          onMouseDown={() => handleMoveStart(10, 0)}
-          onMouseUp={handleMoveEnd}
-          onMouseLeave={handleMoveEnd}
-        >
-          →
-        </button>
-        <br />
-        <button
-          onMouseDown={() => handleMoveStart(0, 10)}
-          onMouseUp={handleMoveEnd}
-          onMouseLeave={handleMoveEnd}
-        >
-          ↓
-        </button>
-      </div>
-    </>
+    <div className="mover">
+      <button
+        className="tc"
+        onMouseDown={() => handleMoveStart(0, -10)}
+        onMouseUp={handleMoveEnd}
+        onMouseLeave={handleMoveEnd}
+      >
+        ↑
+      </button>
+      <button
+        className="ml"
+        onMouseDown={() => handleMoveStart(-10, 0)}
+        onMouseUp={handleMoveEnd}
+        onMouseLeave={handleMoveEnd}
+      >
+        ←
+      </button>
+      <button
+        className="mc"
+        onClick={done}
+      >
+        Done
+      </button>
+      <button
+        className="mr"
+        onMouseDown={() => handleMoveStart(10, 0)}
+        onMouseUp={handleMoveEnd}
+        onMouseLeave={handleMoveEnd}
+      >
+        →
+      </button>
+      <button
+        className="bc"
+        onMouseDown={() => handleMoveStart(0, 10)}
+        onMouseUp={handleMoveEnd}
+        onMouseLeave={handleMoveEnd}
+      >
+        ↓
+      </button>
+    </div>
   )
 }

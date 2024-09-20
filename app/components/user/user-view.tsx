@@ -1,16 +1,17 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import Adder from './adder'
 import Mover from './mover'
+import { useStore } from '../../store'
 
 export default function UserView() {
-  const [spriteId, setSpriteId] = useState<string | null>(null)
+  const name = useStore((state) => state.name)
 
-  return spriteId ? (
-    <Mover
-      spriteId={spriteId}
-      done={() => setSpriteId(null)}
-    />
-  ) : (
-    <Adder setSpriteId={setSpriteId} />
+  return (
+    <div className="user-view">
+      <h1>
+        Welcome, <span>{name}</span>!
+      </h1>
+      <Adder />
+    </div>
   )
 }

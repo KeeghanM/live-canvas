@@ -1,50 +1,50 @@
-import type * as Party from "partykit/server";
+import type * as Party from 'partykit/server'
+import type {
+  Sprite,
+  ConnectionMessage,
+  UpdateMessage,
+  SpriteMessage,
+} from './types'
 
 export default class Server implements Party.Server {
-  count = 0;
+  sprites: Sprite[] = []
 
   constructor(readonly room: Party.Room) {}
 
   onConnect(conn: Party.Connection, ctx: Party.ConnectionContext) {
-    // A websocket just connected!
-    console.log(
-      `Connected:
-  id: ${conn.id}
-  room: ${this.room.id}
-  url: ${new URL(ctx.request.url).pathname}`
-    );
+    // get the client's name from the connection
+    const name = ctx.request.headers.get('name')
+    if (!name) {
+      return
+    }
 
-    // send the current count to the new client
-    conn.send(this.count.toString());
+    // send the current sprites to the new client
+    const spritesMsg: SpriteMessage = { type: 'sprites', payload: this.sprites }
+    conn.send(JSON.stringify(spritesMsg))
+
+    // broadcast the new connection to all clients
+    const msg: ConnectionMessage = { type: 'connected', payload: name }
+    this.room.broadcast(JSON.stringify(msg), [conn.id])
   }
 
   onMessage(message: string, sender: Party.Connection) {
-    // let's log the message
-    console.log(`connection ${sender.id} sent message: ${message}`);
-    // we could use a more sophisticated protocol here, such as JSON
-    // in the message data, but for simplicity we just use a string
-    if (message === "increment") {
-      this.increment();
+    const msg = JSON.parse(message) as UpdateMessage
+    if (msg.type === 'add') {
+      this.addSprite(msg.payload)
+    } else if (msg.type === 'remove') {
+      this.removeSprite(msg.payload)
     }
   }
 
-  onRequest(req: Party.Request) {
-    // response to any HTTP request (any method, any path) with the current
-    // count. This allows us to use SSR to give components an initial value
-
-    // if the request is a POST, increment the count
-    if (req.method === "POST") {
-      this.increment();
-    }
-
-    return new Response(this.count.toString());
+  addSprite(sprite: Sprite) {
+    this.sprites.push(sprite)
+    this.room.broadcast(JSON.stringify({ type: 'add', payload: sprite }))
   }
 
-  increment() {
-    this.count = (this.count + 1) % 100;
-    // broadcast the new count to all clients
-    this.room.broadcast(this.count.toString(), []);
+  removeSprite(sprite: Sprite) {
+    this.sprites = this.sprites.filter((s) => s !== sprite)
+    this.room.broadcast(JSON.stringify({ type: 'remove', payload: sprite }))
   }
 }
 
-Server satisfies Party.Worker;
+Server satisfies Party.Worker

@@ -1,39 +1,25 @@
-import "./styles.css";
-import { createRoot } from "react-dom/client";
-import Counter from "./components/Counter";
+import './styles.css'
+import { createRoot } from 'react-dom/client'
+import { useState } from 'react'
+import LoginForm from './components/ui/login-form'
+import Canvas from './components/canvas/canvas'
 
 function App() {
+  const [name, setName] = useState('')
+
   return (
     <main>
-      <h1>🎈 Welcome to PartyKit!</h1>
-      <p>
-        This is the React starter. (
-        <a href="https://github.com/partykit/templates/tree/main/templates/react">
-          README on GitHub.
-        </a>
-        )
-      </p>
-      <p>Find your way around:</p>
-      <ul>
-        <li>
-          PartyKit server: <code>party/server.ts</code>
-        </li>
-        <li>
-          Client entrypoint: <code>app/client.tsx</code>
-        </li>
-        <li>
-          The Counter component: <code>app/components/Counter.tsx</code>
-        </li>
-      </ul>
-      <p>
-        Read more: <a href="https://docs.partykit.io">PartyKit docs</a>
-      </p>
-      <p>
-        <i>This counter is multiplayer. Try it with multiple browser tabs.</i>
-      </p>
-      <Counter />
+      {name ? (
+        <Canvas name={name} />
+      ) : (
+        <LoginForm
+          onEnter={(name) => {
+            setName(name)
+          }}
+        />
+      )}
     </main>
-  );
+  )
 }
 
-createRoot(document.getElementById("app")!).render(<App />);
+createRoot(document.getElementById('app')!).render(<App />)

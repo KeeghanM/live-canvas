@@ -5,7 +5,7 @@ import LoginForm from './components/ui/login-form'
 import Canvas from './components/canvas/canvas'
 
 function App() {
-  const [name, setName] = useState('')
+  const [name, setName] = useState('Keeghan')
 
   return (
     <main>

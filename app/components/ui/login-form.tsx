@@ -20,14 +20,20 @@ export default function LoginForm({ onEnter }: LoginFormProps) {
     onEnter(name)
   }
   return (
-    <div>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <button onClick={handleEnter}>Enter!</button>
-      {error && <p>This name is invalid.</p>}
+    <div className="login-form">
+      <div className="login-form__center">
+        <h1>Login to Live Canvas</h1>
+        <div className="flex">
+          <input
+            type="text"
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <button onClick={handleEnter}>Enter!</button>
+        </div>
+        {error && <p className="error">This name is invalid.</p>}
+      </div>
     </div>
   )
 }

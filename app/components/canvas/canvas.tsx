@@ -1,37 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
-import usePartySocket from 'partysocket/react'
 import { type P5CanvasInstance, ReactP5Wrapper } from '@p5-wrapper/react'
 import type { Sprite } from '../../../party/types'
+import { useCanvasStore } from '../../canvas-store'
+import UserMessages from './user-messages'
 
 interface CanvasProps {
   name: string
 }
 export default function Canvas({ name }: CanvasProps) {
-  const [sprites, setSprites] = useState<Sprite[]>([])
+  const sprites = useCanvasStore((state) => state.sprites)
+  const addSprite = useCanvasStore((state) => state.addSprite)
+  const removeSprite = useCanvasStore((state) => state.removeSprite)
+  const socket = useCanvasStore((state) => state.socket)
 
-  const socket = usePartySocket({
-    //host: process.env.PARTYKIT_HOST,
-    room: 'live-canvas',
-    query: { name },
-    onMessage(evt) {
-      const data = JSON.parse(evt.data)
-
-      if (data.type === 'sprites') {
-        // Set the list of sprites
-        setSprites(data.payload)
-      } else if (data.type === 'add') {
-        // Add the sprite to the list if it's not one of ours
-        if (data.payload.owner === socket.id) return
-        setSprites((prev) => [...prev, data.payload])
-      } else if (data.type === 'remove') {
-        // Remove the sprite from the list
-        setSprites((prev) => prev.filter((s) => s !== data.payload))
-      } else if (data.type === 'connected') {
-        // User has connected, do something
-        console.log(data.payload)
-      }
-    },
-  })
+  if (!socket) return null
 
   const sketch = (p: P5CanvasInstance) => {
     p.setup = () => {
@@ -46,7 +27,7 @@ export default function Canvas({ name }: CanvasProps) {
         x: p.mouseX,
         y: p.mouseY,
       }
-      setSprites((prev) => [...prev, newSprite])
+      addSprite(newSprite)
       socket.send(JSON.stringify({ type: 'add', payload: newSprite }))
     }
 
@@ -60,5 +41,10 @@ export default function Canvas({ name }: CanvasProps) {
     }
   }
 
-  return <ReactP5Wrapper sketch={sketch} />
+  return (
+    <>
+      <ReactP5Wrapper sketch={sketch} />
+      <UserMessages />
+    </>
+  )
 }

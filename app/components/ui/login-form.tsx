@@ -1,24 +1,42 @@
 import { Filter } from 'bad-words'
 import { useState } from 'react'
+import { useCanvasStore } from '../../canvas-store'
 
-interface LoginFormProps {
-  onEnter: (name: string) => void
-}
-export default function LoginForm({ onEnter }: LoginFormProps) {
+export default function LoginForm() {
   const [name, setName] = useState('')
-  const [error, setError] = useState(false)
+  const [error, setError] = useState('')
+  const [isValidating, setIsValidating] = useState(false)
+  const socket = useCanvasStore((state) => state.socket)
+  const setStoreName = useCanvasStore((state) => state.setName)
 
   const filter = new Filter()
 
   const handleEnter = () => {
-    setError(false)
+    setError('')
     if (name.length < 3 || name.length > 20 || filter.isProfane(name)) {
-      setError(true)
+      setError('This name is invalid.')
       return
     }
 
-    onEnter(name)
+    setIsValidating(true)
+    socket?.send(JSON.stringify({ type: 'validateName', payload: name }))
   }
+
+  if (socket) {
+    socket.onmessage = (evt) => {
+      const data = JSON.parse(evt.data)
+      console.log(data)
+      if (data.type === 'nameValidated') {
+        if (data.payload) {
+          setStoreName(name)
+        } else {
+          setError('This name is already taken.')
+          setIsValidating(false)
+        }
+      }
+    }
+  }
+
   return (
     <div className="login-form">
       <div className="login-form__center">
@@ -29,10 +47,16 @@ export default function LoginForm({ onEnter }: LoginFormProps) {
             placeholder="Enter your name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={isValidating}
           />
-          <button onClick={handleEnter}>Enter!</button>
+          <button
+            onClick={handleEnter}
+            disabled={isValidating || !socket}
+          >
+            {isValidating ? 'Validating...' : 'Enter!'}
+          </button>
         </div>
-        {error && <p className="error">This name is invalid.</p>}
+        {error && <p className="error">{error}</p>}
       </div>
     </div>
   )

@@ -12,7 +12,8 @@
     "p5": "^1.10.0",
     "partysocket": "^1.0.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@types/p5": "^1.7.6",

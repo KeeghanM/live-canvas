@@ -16,3 +16,11 @@ export interface UpdateMessage {
   type: 'add' | 'remove'
   payload: Sprite
 }
+export interface DisconnectMessage {
+  type: 'disconnected'
+  payload: string
+}
+export interface NameValidationMessage {
+  type: 'validateName'
+  payload: string
+}
